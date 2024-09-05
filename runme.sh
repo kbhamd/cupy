@@ -1,0 +1,1 @@
+LD_LIBRARY_PATH=$LIBRARY_PATH python test.py
