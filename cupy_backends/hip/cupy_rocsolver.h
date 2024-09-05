@@ -1966,8 +1966,19 @@ cusolverStatus_t cusolverDnSsyevd_bufferSize(...) {
     return rocblas_status_not_implemented;
 }
 
-cusolverStatus_t cusolverDnDsyevd_bufferSize(...) {
-    return rocblas_status_not_implemented;
+cusolverStatus_t cusolverDnDsyevd_bufferSize(cusolverDnHandle_t handle,
+                                             cusolverEigMode_t jobz,
+                                             cublasFillMode_t uplo,
+                                             int n,
+                                             const double *A,
+                                             int lda,
+                                             const double *W,
+                                             int *lwork) {
+    // rocSOLVER does not need extra workspace, but it needs to allocate memory for storing
+    // the tridiagonal matrix T associated with A, which we don't need, so we use this workspace
+    // to store it
+    *lwork = n;  // note: counts, not bytes!
+    return rocblas_status_success;
 }
 
 cusolverStatus_t cusolverDnCheevd_bufferSize(...) {
@@ -1982,8 +1993,22 @@ cusolverStatus_t cusolverDnSsyevd(...) {
     return rocblas_status_not_implemented;
 }
 
-cusolverStatus_t cusolverDnDsyevd(...) {
-    return rocblas_status_not_implemented;
+cusolverStatus_t cusolverDnDsyevd(cusolverDnHandle_t handle,
+                                  cusolverEigMode_t jobz,
+                                  cublasFillMode_t uplo,
+                                  int n,
+                                  double *A,
+                                  int lda,
+                                  double *D,
+                                  double *W,
+                                  int lwork,
+                                  int *info) {
+    return rocsolver_dsyevd(handle, convert_rocblas_evect(jobz), convert_rocblas_fill(uplo),
+                           n, A, lda, D,
+                           // since we can't pass in another array through the API, and work is unused,
+                           // we use it to store the temporary E array, to be discarded after calculation
+                           W,
+                           info);
 }
 
 cusolverStatus_t cusolverDnCheevd(...) {
