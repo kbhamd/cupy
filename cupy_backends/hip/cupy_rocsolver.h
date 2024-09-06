@@ -1962,8 +1962,19 @@ cusolverStatus_t cusolverDnSHgels(...) {
     return rocblas_status_not_implemented;
 }
 
-cusolverStatus_t cusolverDnSsyevd_bufferSize(...) {
-    return rocblas_status_not_implemented;
+cusolverStatus_t cusolverDnSsyevd_bufferSize(cusolverDnHandle_t handle,
+                                             cusolverEigMode_t jobz,
+                                             cublasFillMode_t uplo,
+                                             int n,
+                                             const float *A,
+                                             int lda,
+                                             const float *W,
+                                             int *lwork) {
+    // rocSOLVER does not need extra workspace, but it needs to allocate memory for storing
+    // the tridiagonal matrix T associated with A, which we don't need, so we use this workspace
+    // to store it
+    *lwork = n;  // note: counts, not bytes!
+    return rocblas_status_success;
 }
 
 cusolverStatus_t cusolverDnDsyevd_bufferSize(cusolverDnHandle_t handle,
@@ -1981,16 +1992,52 @@ cusolverStatus_t cusolverDnDsyevd_bufferSize(cusolverDnHandle_t handle,
     return rocblas_status_success;
 }
 
-cusolverStatus_t cusolverDnCheevd_bufferSize(...) {
-    return rocblas_status_not_implemented;
+cusolverStatus_t cusolverDnCheevd_bufferSize(cusolverDnHandle_t handle,
+                                             cusolverEigMode_t jobz,
+                                             cublasFillMode_t uplo,
+                                             int n,
+                                             const cuComplex *A,
+                                             int lda,
+                                             const float *W,
+                                             int *lwork) {
+    // rocSOLVER does not need extra workspace, but it needs to allocate memory for storing
+    // the tridiagonal matrix T associated with A, which we don't need, so we use this workspace
+    // to store it
+    *lwork = n;  // note: counts, not bytes!
+    return rocblas_status_success;
 }
 
-cusolverStatus_t cusolverDnZheevd_bufferSize(...) {
-    return rocblas_status_not_implemented;
+cusolverStatus_t cusolverDnZheevd_bufferSize(cusolverDnHandle_t handle,
+                                             cusolverEigMode_t jobz,
+                                             cublasFillMode_t uplo,
+                                             int n,
+                                             const cuDoubleComplex *A,
+                                             int lda,
+                                             const double *W,
+                                             int *lwork) {
+    // rocSOLVER does not need extra workspace, but it needs to allocate memory for storing
+    // the tridiagonal matrix T associated with A, which we don't need, so we use this workspace
+    // to store it
+    *lwork = n;  // note: counts, not bytes!
+    return rocblas_status_success;
 }
 
-cusolverStatus_t cusolverDnSsyevd(...) {
-    return rocblas_status_not_implemented;
+cusolverStatus_t cusolverDnSsyevd(cusolverDnHandle_t handle,
+                                  cusolverEigMode_t jobz,
+                                  cublasFillMode_t uplo,
+                                  int n,
+                                  float *A,
+                                  int lda,
+                                  float *D,
+                                  float *W,
+                                  int lwork,
+                                  int *info) {
+    return rocsolver_ssyevd(handle, convert_rocblas_evect(jobz), convert_rocblas_fill(uplo),
+                           n, A, lda, D,
+                           // since we can't pass in another array through the API, and work is unused,
+                           // we use it to store the temporary E array, to be discarded after calculation
+                           W,
+                           info);
 }
 
 cusolverStatus_t cusolverDnDsyevd(cusolverDnHandle_t handle,
@@ -2011,12 +2058,40 @@ cusolverStatus_t cusolverDnDsyevd(cusolverDnHandle_t handle,
                            info);
 }
 
-cusolverStatus_t cusolverDnCheevd(...) {
-    return rocblas_status_not_implemented;
+cusolverStatus_t cusolverDnCheevd(cusolverDnHandle_t handle,
+                                  cusolverEigMode_t jobz,
+                                  cublasFillMode_t uplo,
+                                  int n,
+                                  cuComplex *A,
+                                  int lda,
+                                  float *D,
+                                  cuComplex *W,
+                                  int lwork,
+                                  int *info) {
+    return rocsolver_cheevd(handle, convert_rocblas_evect(jobz), convert_rocblas_fill(uplo),
+                           n, reinterpret_cast<rocblas_float_complex*>(A) , lda, D,
+                           // since we can't pass in another array through the API, and work is unused,
+                           // we use it to store the temporary E array, to be discarded after calculation
+                           reinterpret_cast<float*>(W),
+                           info);
 }
 
-cusolverStatus_t cusolverDnZheevd(...) {
-    return rocblas_status_not_implemented;
+cusolverStatus_t cusolverDnZheevd(cusolverDnHandle_t handle,
+                                  cusolverEigMode_t jobz,
+                                  cublasFillMode_t uplo,
+                                  int n,
+                                  cuDoubleComplex *A,
+                                  int lda,
+                                  double *D,
+                                  cuDoubleComplex *W,
+                                  int lwork,
+                                  int *info) {
+    return rocsolver_zheevd(handle, convert_rocblas_evect(jobz), convert_rocblas_fill(uplo),
+                           n,reinterpret_cast<rocblas_double_complex*>(A) , lda, D,
+                           // since we can't pass in another array through the API, and work is unused,
+                           // we use it to store the temporary E array, to be discarded after calculation
+                           reinterpret_cast<double*>(W),
+                           info);
 }
 
 cusolverStatus_t cusolverDnXsyevjSetTolerance(...) {

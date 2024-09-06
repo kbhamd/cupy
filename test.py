@@ -12,8 +12,8 @@ def timing():
     end = time.time()
     print(end-start,'s')
 
-n=6000
-A = cp.random.rand(n,n)
+n=8192
+A = cp.random.rand(n,n,dtype=np.float32)
 cp.cuda.runtime.deviceSynchronize()
 B = A.get()
  
