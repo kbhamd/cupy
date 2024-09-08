@@ -2,7 +2,7 @@
 #define INCLUDE_GUARD_HIP_CUPY_ROCTX_H
 
 #ifndef CUPY_NO_NVTX
-#include <roctx.h>
+#include <roctracer/roctx.h>
 #endif // #ifndef CUPY_NO_NVTX
 
 // this is to ensure we use non-"Ex" APIs like roctxMarkA etc
