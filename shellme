@@ -1,0 +1,1 @@
+guix shell -L../aaguix --verbosity=3 --expose=/dev/dri --expose=/dev/kfd -CD python-cupy rocm-smi vim git which
