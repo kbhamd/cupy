@@ -186,8 +186,11 @@ def get_compiler_setting(ctx: Context, use_hip):
     _jitify_path = os.path.join(cupy_header, 'cupy/_jitify')
     global _cub_path
     if rocm_path:
-        _cub_path = os.getenv("HIPCUB")
-        #_cub_path = os.path.join(rocm_path, 'include', 'hipcub')
+        _cub_path = os.getenv("CUB_PATH")
+        if _cub_path:
+            _cub_path = os.path.join(_cub_path, 'include', 'hipcub')
+        else:
+            _cub_path = os.path.join(rocm_path, 'include', 'hipcub')
         if not os.path.exists(_cub_path):
             raise Exception('Please install hipCUB and retry')
         _thrust_path = None

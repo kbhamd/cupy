@@ -5,7 +5,7 @@ export HCC_AMDGPU_TARGET=gfx90a,gfx942,gfx1030
 
 HIPCC=`readlink $GUIX_ENVIRONMENT/bin/hipcc`
 export ROCM_HOME=${HIPCC%%/bin/hipcc}
-export HIPCUB=`readlink $GUIX_ENVIRONMENT/include/hipcub`
+export CUB_INCLUDE_PATH=`readlink $GUIX_ENVIRONMENT/include/hipcub`
 
 export CFLAGS="-I$GUIX_ENVIRONMENT/include"
 
