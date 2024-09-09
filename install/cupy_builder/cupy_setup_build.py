@@ -439,8 +439,6 @@ def make_extensions(ctx: Context, compiler, use_cython):
 
             if (PLATFORM_LINUX and len(rpath) != 0):
                 ldflag = '-Wl,'
-                if PLATFORM_LINUX:
-                    ldflag += '--disable-new-dtags,'
                 ldflag += ','.join('-rpath,' + p for p in rpath)
                 args = s_file.setdefault('extra_link_args', [])
                 args.append(ldflag)
